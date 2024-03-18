@@ -1,0 +1,35 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    - cron: '0 0 */2 * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Pull upstream changes
+      run: |
+        git remote add upstream https://github.com/shadowsocks/go-shadowsocks2.git
+        git fetch upstream
+
+    - name: Check if there are changes
+      run: |
+        git diff --exit-code main upstream/main || echo "Changes detected" > changes.txt
+
+    - name: Create a pull request
+      uses: actions/create-pull-request@v2
+      with:
+        branch: master
+        title: 'Sync with upstream'
+        body: 'Automatically sync with upstream'
+        base: master
+        commit-message: 'Sync with upstream'
+        auto-merge: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        labels: 'sync'
+        draft: false
+        reviewers: 'mparvin'
