@@ -21,7 +21,7 @@ jobs:
         git diff --exit-code main upstream/main || echo "Changes detected" > changes.txt
 
     - name: Create a pull request
-      uses: actions/create-pull-request@v2
+      uses: peter-evans/create-pull-request@v3
       with:
         branch: master
         title: 'Sync with upstream'
@@ -33,3 +33,4 @@ jobs:
         labels: 'sync'
         draft: false
         reviewers: 'mparvin'
+      if: steps.sync.outcome == 'failure'
